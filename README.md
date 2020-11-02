@@ -6,6 +6,7 @@ This project includes :
 
 - 1 Kafka cluster of 3 brokers
 - 1 ZooKeeper cluster of 3 workers
+- 1 Kowl UI (Kafka activity monitoring)
 - 1 Python example of producer
 - 1 Python example of consumer
 
