@@ -4,6 +4,7 @@ import pickle
 from datetime import datetime
 from kafka import KafkaProducer, KafkaClient
 from kafka.admin import KafkaAdminClient, NewTopic
+from kafka.errors import KafkaError
 
 from essential_generators import DocumentGenerator
 
@@ -33,13 +34,18 @@ future = client.cluster.request_update()
 client.poll(future=future)
 broker_topics = metadata.topics()
 
-# Deleting topic if it already exists
-# to update configuration (topic_configs)
-#admin_client = KafkaAdminClient(bootstrap_servers=kafka_servers)
-# if topic_name in broker_topics:
-#     deletion = admin_client.delete_topics([topic_name])
-#     time.sleep(5)
-#admin_client.create_topics(new_topics=topic_list, validate_only=False)
+# Deleting topic if it already exists.
+# This is NOT recommended in production. Deletion must 
+admin_client = KafkaAdminClient(bootstrap_servers=kafka_servers)
+if topic_name in broker_topics:
+    deletion = admin_client.delete_topics([topic_name])
+    try:
+        future = client.cluster.request_update()
+        client.poll(future=future)
+    except KafkaError as e:
+        print(e)
+        pass
+admin_client.create_topics(new_topics=topic_list, validate_only=False)
 
 # Setting up producer
 print("Connecting producer to cluser...", flush=True)

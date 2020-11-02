@@ -23,7 +23,7 @@ ip a | grep docker0
 
 > In the image above, the IP to choose is `192.168.254.1`
 
-Set it inside `.env`, `producer/.env` and `consumer/.env`
+Set it changing `YOUR_IP` inside `.env`, `producer/.env` and `consumer/.env`
 
 > Interestingly, I was not able to make Kafka listen on `0.0.0.0` as it triggers an error. That's why we need to specify the exact IP of our machine.
 
@@ -55,8 +55,13 @@ docker-compose -f ./consumer/docker-compose.yml up
 
 ![Consumer run example](./images/consumer.png)
 
-## 5. (optionnal) Watch the UI
+## 5. (optional) Watch the UI
 
 Connect to [`localhost:8080`](http://localhost:8080) to visualize your cluster activity
 
 ![Kowl UI example](./images/UI.png)
+
+## 6. TODOs for this repo
+
+- [ ] Provide a fully working example of an SSL configuration
+- [x] Provide an example on how to delete a topic
