@@ -1,23 +1,30 @@
 version: '3.7'
 
 services:
-
-    kowl:
-        image: quay.io/cloudhut/kowl:v1.1.0
-        restart: on-failure
-        hostname: kowl
-        volumes:
-            - type: bind
-              source: ./config-kowl.yaml
-              target: /etc/kowl/config.yaml
-              read_only: true
-        ports:
-        - "8080:8080"
-        entrypoint: ./kowl --config.filepath=/etc/kowl/config.yaml
+    
+    control-center:
+        # https://github.com/confluentinc/cp-demo/blob/5.5.1-post/docker-compose.yml
+        image: confluentinc/cp-enterprise-control-center:5.5.1
         depends_on:
+            - zoo1
+            - zoo2
+            - zoo3
             - kafka1
             - kafka2
             - kafka3
+        ports:
+            - 9021:9021
+        environment:
+            CONTROL_CENTER_REST_LISTENERS: "http://0.0.0.0:9021"
+            CONTROL_CENTER_BOOTSTRAP_SERVERS: "kafka1:19092,kafka2:19093,kafka3:19094"
+            CONTROL_CENTER_ZOOKEEPER_CONNECT: "zoo1:2181,zoo2:2182,zoo3:2183"
+            CONTROL_CENTER_REPLICATION_FACTOR: 2
+            CONTROL_CENTER_INTERNAL_TOPICS_PARTITIONS: 1
+            CONTROL_CENTER_MONITORING_INTERCEPTOR_TOPIC_REPLICATION: 2
+            CONTROL_CENTER_MONITORING_INTERCEPTOR_TOPIC_PARTITIONS: 1
+            CONTROL_CENTER_METRICS_TOPIC_REPLICATION: 2
+            CONTROL_CENTER_METRICS_TOPIC_PARTITIONS: 1
+            PORT: 9021
 
     zoo1:
         image: zookeeper:3.4.9
@@ -63,7 +70,7 @@ services:
 
 
     kafka1:
-        image: confluentinc/cp-kafka:5.5.1
+        image: confluentinc/cp-enterprise-kafka:5.5.1
         restart: always
         hostname: kafka1
         ports:
@@ -74,7 +81,13 @@ services:
             KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_DOCKER_INTERNAL
             KAFKA_ZOOKEEPER_CONNECT: "zoo1:2181,zoo2:2182,zoo3:2183"
             KAFKA_BROKER_ID: 1
+            KAFKA_BROKER_RACK: "r1"
             KAFKA_LOG4J_LOGGERS: "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO"
+            KAFKA_METRIC_REPORTERS: "io.confluent.metrics.reporter.ConfluentMetricsReporter"
+            CONFLUENT_METRICS_REPORTER_TOPIC_REPLICAS: 3
+            CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: "kafka1:19092"
+            CONFLUENT_METRICS_REPORTER_MAX_REQUEST_SIZE: 10485760
+            CONFLUENT_METRICS_REPORTER_TOPIC_CREATE: "false"
         volumes:
             - ./cluster-data/kafka1/data:/var/lib/kafka/data
         depends_on:
@@ -83,7 +96,7 @@ services:
             - zoo3
 
     kafka2:
-        image: confluentinc/cp-kafka:5.5.1
+        image: confluentinc/cp-enterprise-kafka:5.5.1
         restart: always
         hostname: kafka2
         ports:
@@ -94,7 +107,13 @@ services:
             KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_DOCKER_INTERNAL
             KAFKA_ZOOKEEPER_CONNECT: "zoo1:2181,zoo2:2182,zoo3:2183"
             KAFKA_BROKER_ID: 2
+            KAFKA_BROKER_RACK: "r1"
             KAFKA_LOG4J_LOGGERS: "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO"
+            KAFKA_METRIC_REPORTERS: "io.confluent.metrics.reporter.ConfluentMetricsReporter"
+            CONFLUENT_METRICS_REPORTER_TOPIC_REPLICAS: 3
+            CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: "kafka2:19093"
+            CONFLUENT_METRICS_REPORTER_MAX_REQUEST_SIZE: 10485760
+            CONFLUENT_METRICS_REPORTER_TOPIC_CREATE: "false"
         volumes:
             - ./cluster-data/kafka2/data:/var/lib/kafka/data
         depends_on:
@@ -103,7 +122,7 @@ services:
             - zoo3
 
     kafka3:
-        image: confluentinc/cp-kafka:5.5.1
+        image: confluentinc/cp-enterprise-kafka:5.5.1
         restart: always
         hostname: kafka3
         ports:
@@ -114,7 +133,13 @@ services:
             KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_DOCKER_INTERNAL
             KAFKA_ZOOKEEPER_CONNECT: "zoo1:2181,zoo2:2182,zoo3:2183"
             KAFKA_BROKER_ID: 3
+            KAFKA_BROKER_RACK: "r1"
             KAFKA_LOG4J_LOGGERS: "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO"
+            KAFKA_METRIC_REPORTERS: "io.confluent.metrics.reporter.ConfluentMetricsReporter"
+            CONFLUENT_METRICS_REPORTER_TOPIC_REPLICAS: 3
+            CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: "kafka3:19094"
+            CONFLUENT_METRICS_REPORTER_MAX_REQUEST_SIZE: 10485760
+            CONFLUENT_METRICS_REPORTER_TOPIC_CREATE: "false"
         volumes:
             - ./cluster-data/kafka3/data:/var/lib/kafka/data
         depends_on:

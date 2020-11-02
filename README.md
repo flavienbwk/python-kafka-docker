@@ -6,7 +6,7 @@ This project includes :
 
 - 1 Kafka cluster of 3 brokers
 - 1 ZooKeeper cluster of 3 workers
-- 1 Kowl UI (Kafka activity monitoring)
+- 1 Confluent Control Center (Kafka UI)
 - 1 Python example of producer
 - 1 Python example of consumer
 
@@ -58,7 +58,7 @@ docker-compose -f ./consumer/docker-compose.yml up
 
 ## 5. (optional) Watch the UI
 
-Connect to [`localhost:8080`](http://localhost:8080) to visualize your cluster activity
+Connect to [`localhost:9021`](http://localhost:9021) to visualize your cluster activity
 
 ![Kowl UI example](./images/UI.png)
 
