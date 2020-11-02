@@ -30,10 +30,18 @@ Set it changing `YOUR_IP` inside `.env`, `producer/.env` and `consumer/.env`
 
 ## 2. Starting Kafka
 
-Start the cluster :
+You have two choices : starting the open-source Kafka version or the Enterprise one. The latter will allow you to benefit from all the features in the Confluent Control Center, especially the metrics.
+
+To start the open-source cluster :
 
 ```bash
 docker-compose up -d
+```
+
+To start the enterprise cluster :
+
+```bash
+docker-compose -f docker-compose.enterprise.yml up -d
 ```
 
 ## 3. Adding and feeding a topic (producer)
