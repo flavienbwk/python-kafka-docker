@@ -1,0 +1,14 @@
+version: "3.7"
+
+services:
+
+    producer:
+        build: .
+        command: python3 /usr/app/producer.py
+        env_file:
+            - .env
+        volumes:
+            - type: bind
+              source: ./producer.py
+              target: /usr/app/producer.py
+              read_only: true
