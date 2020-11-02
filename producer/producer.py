@@ -15,7 +15,7 @@ topic_name = "sentences"
 
 
 print("Brokers : ", kafka_servers, flush=True)
-print("Preparing clusers...", flush=True)
+print("Preparing cluster...", flush=True)
 
 # Setting up brokers with topic
 topic_list = [
@@ -48,7 +48,7 @@ if topic_name in broker_topics:
 admin_client.create_topics(new_topics=topic_list, validate_only=False)
 
 # Setting up producer
-print("Connecting producer to cluser...", flush=True)
+print("Connecting producer to cluster...", flush=True)
 producer = KafkaProducer(
     bootstrap_servers=kafka_servers,
     max_block_ms=10000,  # connection timeout
